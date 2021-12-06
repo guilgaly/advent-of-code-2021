@@ -63,12 +63,18 @@ fn calculate_rates(diagnostics: &[BitVec]) -> Rates {
     }
     let oxygen_rating = calculate_rating(&diagnostics, |count, total| {
         let expected = count * 2 >= total;
-        println!("[Oxygen] count={}, total={}, expected={}", count, total, expected);
+        println!(
+            "[Oxygen] count={}, total={}, expected={}",
+            count, total, expected
+        );
         expected
     });
     let co2_rating = calculate_rating(&diagnostics, |count, total| {
         let expected = count * 2 < total;
-        println!("[CO2] count={}, total={}, expected={}", count, total, expected);
+        println!(
+            "[CO2] count={}, total={}, expected={}",
+            count, total, expected
+        );
         expected
     });
 
@@ -127,12 +133,7 @@ mod tests {
     #[test]
     fn test_calculate_rates() {
         let actual = calculate_rates(&test_input());
-        let expected = Rates {
-            gamma: 22,
-            epsilon: 9,
-            oxygen: 23,
-            co2: 10,
-        };
+        let expected = Rates { gamma: 22, epsilon: 9, oxygen: 23, co2: 10 };
         assert_eq!(expected, actual);
     }
 }

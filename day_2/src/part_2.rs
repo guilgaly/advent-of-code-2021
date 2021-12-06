@@ -6,11 +6,7 @@ pub fn part_2_result(commands: &[Command]) -> i32 {
 }
 
 fn follow_commands(commands: &[Command]) -> Position {
-    let initial_pos = Position {
-        horizontal: 0,
-        depth: 0,
-        aim: 0,
-    };
+    let initial_pos = Position { horizontal: 0, depth: 0, aim: 0 };
     commands
         .iter()
         .fold(initial_pos, |acc, next| acc.apply_command(next))
@@ -31,14 +27,8 @@ impl Position {
                 depth: self.depth + self.aim * x,
                 ..*self
             },
-            Command::Down(x) => Position {
-                aim: self.aim + x,
-                ..*self
-            },
-            Command::Up(x) => Position {
-                aim: self.aim - x,
-                ..*self
-            },
+            Command::Down(x) => Position { aim: self.aim + x, ..*self },
+            Command::Up(x) => Position { aim: self.aim - x, ..*self },
         }
     }
 }

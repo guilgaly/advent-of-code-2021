@@ -6,10 +6,7 @@ pub fn part_1_result(commands: &[Command]) -> i32 {
 }
 
 fn follow_commands(commands: &[Command]) -> Position {
-    let initial_pos = Position {
-        horizontal: 0,
-        depth: 0,
-    };
+    let initial_pos = Position { horizontal: 0, depth: 0 };
     commands
         .iter()
         .fold(initial_pos, |acc, next| acc.apply_command(next))
@@ -24,18 +21,9 @@ struct Position {
 impl Position {
     fn apply_command(&self, command: &Command) -> Position {
         match command {
-            Command::Forward(x) => Position {
-                horizontal: self.horizontal + x,
-                ..*self
-            },
-            Command::Down(x) => Position {
-                depth: self.depth + x,
-                ..*self
-            },
-            Command::Up(x) => Position {
-                depth: self.depth - x,
-                ..*self
-            },
+            Command::Forward(x) => Position { horizontal: self.horizontal + x, ..*self },
+            Command::Down(x) => Position { depth: self.depth + x, ..*self },
+            Command::Up(x) => Position { depth: self.depth - x, ..*self },
         }
     }
 }
@@ -56,10 +44,7 @@ mod tests {
     #[test]
     fn test_part_1() -> Result<(), String> {
         let actual = follow_commands(&TEST_INPUT);
-        let expected = Position {
-            horizontal: 15,
-            depth: 10,
-        };
+        let expected = Position { horizontal: 15, depth: 10 };
         assert_eq!(expected, actual);
         Ok(())
     }
