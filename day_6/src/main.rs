@@ -4,6 +4,8 @@ const NEW_FISH_TIMER: usize = 8;
 const RESET_FISH_TIMER: usize = 6;
 const MAX_FISH_TIMER: usize = NEW_FISH_TIMER;
 
+/// Index = fish timer, value = number of fish with that timer.
+/// E.g. if `fish[2] == 5`, there are 5 fish with a timer of 2.
 type Fish = [usize; MAX_FISH_TIMER + 1];
 
 fn main() -> Result<(), String> {
