@@ -2,8 +2,6 @@ use common::itertools::Itertools;
 use common::lazy_static::lazy_static;
 use common::regex::Regex;
 use std::collections::HashMap;
-use std::fmt::Write;
-use std::iter;
 
 static INPUT_1: &str = include_str!("input_1");
 static INPUT_2: &str = include_str!("input_2");
@@ -15,8 +13,8 @@ fn main() -> Result<(), String> {
     let part_1_result = polymerize(&polymer_template, &insertion_rules, 10)?;
     println!("Part 1 result: {}", part_1_result);
 
-    // let part_2_result = polymerize(&polymer_template, &insertion_rules, 40)?;
-    // println!("Part 2 result: {}", part_2_result);
+    let part_2_result = polymerize(&polymer_template, &insertion_rules, 40)?;
+    println!("Part 2 result: {}", part_2_result);
 
     Ok(())
 }
@@ -26,30 +24,37 @@ fn polymerize(
     insertion_rules: &InsertionRules,
     steps: usize,
 ) -> Result<usize, String> {
-    let mut polymer: Vec<Element> = polymer_template.iter().map(|e| *e).collect();
-
-    for _ in 0..steps {
-        let mut new_polymer = Vec::new();
-
-        for i in 0..(polymer.len() - 1) {
-            let p1 = polymer[i];
-            new_polymer.push(p1);
-            let p2 = polymer[i + 1];
-            for i in insertion_rules.get(&(p1, p2)) {
-                new_polymer.push(*i);
-            }
-        }
-        new_polymer.push(polymer[polymer.len() - 1]);
-        polymer = new_polymer;
+    let mut element_counts: HashMap<Element, usize> = HashMap::new();
+    for e in polymer_template {
+        *element_counts.entry(*e).or_insert(0) += 1;
     }
 
-    polymer.sort();
-    let counts_map = polymer.iter().counts();
-    let mut counts = counts_map.values().sorted();
+    let mut pairs: HashMap<Pair, usize> = polymer_template
+        .iter()
+        .tuple_windows::<(_, _)>()
+        .map(|(p1, p2)| (*p1, *p2))
+        .counts();
+
+    for _ in 0..steps {
+        let mut new_pairs: HashMap<Pair, usize> = HashMap::new();
+        for (pair, count) in pairs {
+            match insertion_rules.get(&pair) {
+                Some(i) => {
+                    *element_counts.entry(*i).or_insert(0) += count;
+                    *new_pairs.entry((pair.0, *i)).or_insert(0) += count;
+                    *new_pairs.entry((*i, pair.1)).or_insert(0) += count;
+                }
+                None => {
+                    *new_pairs.entry(pair).or_insert(0) += count;
+                }
+            }
+        }
+        pairs = new_pairs;
+    }
+
+    let mut counts = element_counts.values().sorted();
     let smallest = counts.next().ok_or("Smallest count not found")?;
     let largest = counts.last().ok_or("Largest count not found")?;
-    println!("smallest={}", smallest);
-    println!("largest={}", largest);
 
     Ok(largest - smallest)
 }
@@ -132,7 +137,11 @@ CN -> C",
         let expected = 1588;
         assert_eq!(expected, actual);
     }
-    //
-    // #[test]
-    // fn test_part_2() {}
+
+    #[test]
+    fn test_part_2() {
+        let actual = polymerize(&POLYMER_TEMPLATE, &insertion_rules(), 40).unwrap();
+        let expected = 2188189693529;
+        assert_eq!(expected, actual);
+    }
 }
